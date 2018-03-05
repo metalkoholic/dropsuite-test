@@ -11,9 +11,9 @@ timeout = config["database"]["timeout"] || 20
 
 conn = r.connect(host: host, port: port, db: db, timeout: timeout)
 
-r.db_create("dropsuite_test").run(conn) unless r.db_list.run(conn).include?("dropsuite_test")
+r.db_create(db).run(conn) unless r.db_list.run(conn).include?(db)
 
-database = r.db('dropsuite_test')
+database = r.db(db)
 
 database.table_create('files').run(conn) unless database.table_list().run(conn).include?("files")
 
