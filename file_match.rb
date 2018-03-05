@@ -1,8 +1,14 @@
+require 'yaml'
 require 'find'
 require 'rethinkdb'
 include RethinkDB::Shortcuts
 
-conn = r.connect(host: "localhost", port: 28015, db: "dropsuite_test")
+config = YAML.load_file("config/database.yml")
+host = config["database"]["host"] || "localhost"
+port = config["database"]["port"] || "28015"
+db = config["database"]["db"] || "dropsuite_test"
+
+conn = r.connect(host: host, port: port, db: db)
 
 r.db_create("dropsuite_test").run(conn) unless r.db_list.run(conn).include?("dropsuite_test")
 
