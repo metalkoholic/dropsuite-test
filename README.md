@@ -22,6 +22,7 @@ git clone git@github.com:metalkoholic/dropsuite-test.git
 ```
 cd dropsuite-test
 ```
+* modify config/database.yml to suit your rethinkdb configuration
 * run the app
 ```
 ruby file_match.rb your_target_directory
