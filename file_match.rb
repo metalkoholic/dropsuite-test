@@ -27,9 +27,11 @@ puts "Going to open dir '#{url}'"
 
 file_paths = []
 Find.find(url) do |path|
-  fh = open path
-  file_paths << {path: path, content: fh.read.force_encoding("ISO-8859-1").encode("UTF-8") } if File.file?(path) && !path.include?(".DS_Store") && !path.include?(".keep")
-  fh.close
+  if File.file?(path) && !path.include?(".DS_Store") && !path.include?(".keep")
+    file_content = ""
+    IO.foreach(path) { |line| file_content << line.force_encoding("ISO-8859-1").encode("UTF-8") }
+    file_paths << {path: path, content: file_content }
+  end
 end
 
 database.table("files").insert(file_paths).run(conn)
