@@ -41,5 +41,6 @@ if result.empty?
   puts "No file in directory #{url}" 
 else
   result = result.sort_by {|key, value| value}
-  puts "#{result.last.first} #{result.last.last}"
+  content = result.last.first.dup
+  puts "#{content.force_encoding('UTF-8').encode('ISO-8859-1')} #{result.last.last}"
 end
