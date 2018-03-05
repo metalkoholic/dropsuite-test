@@ -28,7 +28,7 @@ puts "Going to open dir '#{url}'"
 file_paths = []
 Find.find(url) do |path|
   fh = open path
-  file_paths << {path: path, content: fh.read.force_encoding("ISO-8859-1").encode("UTF-8") } if File.file?(path) && !path.include?(".DS_Store")
+  file_paths << {path: path, content: fh.read.force_encoding("ISO-8859-1").encode("UTF-8") } if File.file?(path) && !path.include?(".DS_Store") && !path.include?(".keep")
   fh.close
 end
 
