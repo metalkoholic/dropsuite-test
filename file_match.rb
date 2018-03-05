@@ -9,7 +9,6 @@ r.db_create("dropsuite_test").run(conn) unless r.db_list.run(conn).include?("dro
 database = r.db('dropsuite_test')
 
 database.table_create('files').run(conn) unless database.table_list().run(conn).include?("files")
-# url = "/Users/bayu-worka/Documents/projects/DropsuiteTest"
 
 database.table("files").delete.run(conn)
 
@@ -35,5 +34,6 @@ result = database.table('files').group('content').count().run(conn)
 if result.empty?
   puts "No file in directory #{url}" 
 else
-  "#{result.first.first} #{result.first.last}"
+  result = result.sort_by {|key, value| value}
+  puts "#{result.last.first} #{result.last.last}"
 end
