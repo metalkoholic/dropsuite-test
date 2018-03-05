@@ -2,3 +2,4 @@ database:
   host: "localhost"
   port: "28015"
   db: "dropsuite_test"
+  timeout: 20

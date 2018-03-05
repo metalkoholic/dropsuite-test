@@ -7,8 +7,9 @@ config = YAML.load_file("config/database.yml")
 host = config["database"]["host"] || "localhost"
 port = config["database"]["port"] || "28015"
 db = config["database"]["db"] || "dropsuite_test"
+timeout = config["database"]["timeout"] || 20
 
-conn = r.connect(host: host, port: port, db: db)
+conn = r.connect(host: host, port: port, db: db, timeout: timeout)
 
 r.db_create("dropsuite_test").run(conn) unless r.db_list.run(conn).include?("dropsuite_test")
 
