@@ -16,8 +16,6 @@ database = r.db('dropsuite_test')
 
 database.table_create('files').run(conn) unless database.table_list().run(conn).include?("files")
 
-database.table("files").delete.run(conn)
-
 if ARGV.length != 1
   puts "We need exactly one parameter. The name of a file."
   exit;
@@ -30,12 +28,14 @@ puts "Going to open dir '#{url}'"
 file_paths = []
 Find.find(url) do |path|
   fh = open path
-  file_paths << {path: path, content: fh.read} if File.file?(path) && !path.include?(".DS_Store")
+  file_paths << {path: path, content: fh.read.force_encoding("ISO-8859-1").encode("UTF-8") } if File.file?(path) && !path.include?(".DS_Store")
   fh.close
 end
 
 database.table("files").insert(file_paths).run(conn)
 result = database.table('files').group('content').count().run(conn)
+
+database.table("files").delete.run(conn)
 
 if result.empty?
   puts "No file in directory #{url}" 
