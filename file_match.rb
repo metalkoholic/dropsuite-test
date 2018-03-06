@@ -3,6 +3,14 @@ require 'find'
 require 'rethinkdb'
 include RethinkDB::Shortcuts
 
+if ARGV.length != 1
+  puts "We need exactly one parameter. The name of a directory."
+  exit;
+elsif !File.directory?(ARGV[0])
+  puts "parameter should be a directory."
+  exit;
+end
+
 config = YAML.load_file("config/database.yml")
 host = config["database"]["host"] || "localhost"
 port = config["database"]["port"] || "28015"
@@ -16,11 +24,6 @@ r.db_create(db).run(conn) unless r.db_list.run(conn).include?(db)
 database = r.db(db)
 
 database.table_create('files').run(conn) unless database.table_list().run(conn).include?("files")
-
-if ARGV.length != 1
-  puts "We need exactly one parameter. The name of a file."
-  exit;
-end
 
 url = ARGV[0]
 puts "Going to open dir '#{url}'"
