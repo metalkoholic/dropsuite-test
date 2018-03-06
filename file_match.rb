@@ -30,12 +30,40 @@ file_paths = []
 Find.find(url) do |path|
   if File.file?(path) && !path.include?(".DS_Store") && !path.include?(".keep")
     file_content = ""
-    IO.foreach(path) { |line| file_content << line.force_encoding("ISO-8859-1").encode("UTF-8") }
-    file_paths << {path: path, content: file_content }
+    arr_content = []
+    i = 0
+    IO.foreach(path) { |line| 
+      if (i % 200000) === 0 && i != 0
+        arr_content << file_content
+        file_content = ""
+      else
+        file_content << line.force_encoding("ISO-8859-1").encode("UTF-8")
+      end
+      i += 1
+    }
+    if arr_content.empty?
+      file_paths << {path: path, content: file_content }
+    else
+      arr_content.each do |cntn|
+        file_paths << {path: path, content: file_content }
+      end
+    end
   end
 end
 
-database.table("files").insert(file_paths).run(conn)
+paths = file_paths.map{|file| file[:path]}
+if paths.uniq.length === paths.length
+  database.table("files").insert(file_paths).run(conn)
+else
+  file_paths.each do |file|
+    filter_query = database.table("files").filter({:path => file[:path]})
+    if filter_query.run(conn).to_a.empty?
+      database.table("files").insert({path: file[:path], content: file[:content]}).run(conn)
+    else
+      filter_query.update{ |doc| { :content => doc["content"] + file[:content]}}.run(conn)
+    end
+  end
+end
 result = database.table('files').group('content').count().run(conn)
 
 database.table("files").delete.run(conn)
